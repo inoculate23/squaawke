@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Squaawke</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0d0d0d;
+      --surface: #161616;
+      --border:  #252525;
+      --accent:  #6c8ee8;
+      --accent2: #a06ce8;
+      --green:   #6ecf8e;
+      --red:     #e86c6c;
+      --text:    #d8d8d8;
+      --muted:   #666;
+      --radius:  10px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 17px;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 16px 64px;
+    }
+
+    /* ── Header ── */
+    header {
+      width: 100%;
+      max-width: 860px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 32px;
+    }
+
+    header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #fff;
+    }
+
+    header .badge {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+
+    /* ── Status pill ── */
+    #system-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+    .dot.ready  { background: var(--green); }
+    .dot.error  { background: var(--red); }
+
+    /* ── Layout ── */
+    .main {
+      width: 100%;
+      max-width: 860px;
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 16px;
+    }
+
+    @media (max-width: 700px) {
+      .main { grid-template-columns: 1fr; }
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+
+    .card-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    /* ── Prompt ── */
+    #prompt-input {
+      width: 100%;
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 17px;
+      padding: 14px 16px;
+      resize: vertical;
+      min-height: 80px;
+      outline: none;
+      transition: border-color .2s;
+    }
+    #prompt-input:focus { border-color: var(--accent); }
+    #prompt-input::placeholder { color: #3a3a3a; }
+
+    /* ── Tags ── */
+    .tag-group { margin-top: 14px; }
+
+    .tag-label {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      background: #1e1e1e;
+      border: 1px solid #2e2e2e;
+      border-radius: 20px;
+      color: #aaa;
+      cursor: pointer;
+      font-size: 13px;
+      padding: 5px 12px;
+      transition: background .15s, border-color .15s, color .15s;
+      user-select: none;
+    }
+    .tag:hover  { background: #282828; color: #ccc; }
+    .tag.active { background: #1e2a4e; border-color: var(--accent); color: var(--accent); }
+
+    /* ── Lyrics ── */
+    .section-btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .sec-btn {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 6px;
+      color: #888;
+      cursor: pointer;
+      font-size: 12px;
+      padding: 4px 10px;
+      transition: background .15s;
+    }
+    .sec-btn:hover { background: #222; color: #aaa; }
+
+    #lyrics-input {
+      width: 100%;
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'Courier New', monospace;
+      font-size: 15px;
+      padding: 14px 16px;
+      resize: vertical;
+      min-height: 140px;
+      outline: none;
+      transition: border-color .2s;
+    }
+    #lyrics-input:focus { border-color: var(--accent); }
+    #lyrics-input::placeholder { color: #2a2a2a; }
+
+    /* ── Settings sidebar ── */
+    .setting-row {
+      margin-bottom: 18px;
+    }
+
+    .setting-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    select, input[type="number"], input[type="text"] {
+      width: 100%;
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--text);
+      font-size: 15px;
+      padding: 9px 12px;
+      outline: none;
+      transition: border-color .2s;
+      -webkit-appearance: none;
+    }
+    select:focus,
+    input[type="number"]:focus,
+    input[type="text"]:focus { border-color: var(--accent); }
+
+    /* Duration pills */
+    .dur-pills {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .dur-pill {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 6px;
+      color: #888;
+      cursor: pointer;
+      flex: 1;
+      font-size: 13px;
+      min-width: 36px;
+      padding: 7px 4px;
+      text-align: center;
+      transition: background .15s, border-color .15s, color .15s;
+      user-select: none;
+    }
+    .dur-pill.active { background: #1e2a4e; border-color: var(--accent); color: var(--accent); }
+    .dur-pill:hover  { background: #222; }
+
+    /* Slider */
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    input[type="range"] {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      background: #2a2a2a;
+      border-radius: 4px;
+      height: 4px;
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      background: var(--accent);
+      border-radius: 50%;
+      cursor: pointer;
+      height: 16px;
+      width: 16px;
+    }
+    .slider-val {
+      color: var(--accent);
+      font-size: 14px;
+      min-width: 32px;
+      text-align: right;
+    }
+ /* ── STEM PANEL ──────────────────────────────────── */
+    .stem-btn { border-color: rgba(168,85,247,.4); color: #c084fc; }
+    .stem-btn:hover { background: rgba(168,85,247,.12); border-color: rgba(168,85,247,.6); }
+
+    .stem-panel {
+      margin-top: 10px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .stem-panel-title {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 10px;
+    }
+    .stem-tracks { display: flex; flex-direction: column; gap: 6px; }
+    .stem-row { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+    .stem-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+    .stem-dot.pending   { background: var(--muted); }
+    .stem-dot.processing{ background: #f59e0b; animation: pulse 1s infinite; }
+    .stem-dot.done      { background: #22c55e; }
+    .stem-dot.error,
+    .stem-dot.timeout   { background: #ef4444; }
+    .stem-name  { width: 60px; font-weight: 500; color: var(--text); }
+    .stem-status{ color: var(--muted); font-size: 13px; }
+    .stem-footer{
+      margin-top: 12px; display: flex; align-items: center;
+      gap: 10px; flex-wrap: wrap;
+      border-top: 1px solid var(--border); padding-top: 10px;
+    }
+    #stemMsg-default { font-size: 13px; color: var(--muted); flex: 1; }
+
+    /* ── Generate button ── */
+    #gen-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none;
+      border-radius: 9px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      padding: 16px;
+      text-transform: uppercase;
+      transition: opacity .2s, transform .1s;
+      margin-top: 4px;
+    }
+    #gen-btn:hover   { opacity: .9; }
+    #gen-btn:active  { transform: scale(.98); }
+    #gen-btn:disabled { opacity: .35; cursor: not-allowed; }
+
+    /* ── Progress ── */
+    #progress-wrap { display: none; margin-top: 16px; }
+
+    .progress-stages {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .stage {
+      flex: 1;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .5px;
+      padding: 8px;
+      text-align: center;
+      text-transform: uppercase;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      color: #444;
+      transition: background .3s, border-color .3s, color .3s;
+    }
+    .stage.active { background: #1e2a4e; border-color: var(--accent); color: var(--accent); }
+    .stage.done   { background: #1a2a1a; border-color: var(--green);  color: var(--green); }
+
+    .progress-bar-bg {
+      background: #1e1e1e;
+      border-radius: 6px;
+      height: 6px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      height: 100%;
+      width: 0%;
+      transition: width .6s ease;
+    }
+
+    #progress-msg {
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 8px;
+      min-height: 20px;
+    }
+
+    /* ── Output / Player ── */
+    #output-wrap { display: none; margin-top: 20px; }
+
+    .player-card {
+      background: #0f1a2e;
+      border: 1px solid #1e3a6e;
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    .player-prompt {
+      color: #8aa6f5;
+      font-size: 14px;
+      margin-bottom: 14px;
+      opacity: .8;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    audio {
+      width: 100%;
+      border-radius: 6px;
+      margin-bottom: 14px;
+      filter: invert(1) hue-rotate(180deg);
+    }
+
+    .player-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .act-btn {
+      background: #1a2a4a;
+      border: 1px solid #2a3a6a;
+      border-radius: 7px;
+      color: #8aa6f5;
+      cursor: pointer;
+      font-size: 13px;
+      padding: 8px 16px;
+      transition: background .15s;
+    }
+    .act-btn:hover { background: #223060; }
+
+    /* ── History ── */
+    #history-wrap { margin-top: 24px; }
+
+    #history-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+
+    .hist-item {
+      background: #111;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 14px;
+      transition: background .15s;
+      font-size: 14px;
+    }
+    .hist-item:hover { background: #181818; }
+    .hist-prompt { color: #bbb; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .hist-time   { color: #444; font-size: 12px; margin-left: 10px; flex-shrink: 0; }
+
+    /* ── Model status indicators ── */
+    .model-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 5px;
+      color: #666;
+      font-size: 12px;
+      margin: 2px;
+      padding: 3px 8px;
+    }
+    .model-chip.ready { border-color: #1e3e1e; color: #6a9a6a; }
+    .model-chip.missing { border-color: #3e1e1e; color: #9a5a5a; }
+
+    /* ── Compose card ── */
+    #compose-idea {
+      width: 100%;
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 17px;
+      padding: 14px 16px;
+      resize: vertical;
+      min-height: 72px;
+      outline: none;
+      transition: border-color .2s;
+      margin-bottom: 10px;
+    }
+    #compose-idea:focus { border-color: var(--accent2); }
+    #compose-idea::placeholder { color: #3a3a3a; }
+
+    #compose-btn {
+      background: linear-gradient(135deg, var(--accent2), #7b3fc4);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 10px 22px;
+      transition: opacity .2s, transform .1s;
+      white-space: nowrap;
+    }
+    #compose-btn:hover  { opacity: .85; }
+    #compose-btn:active { transform: scale(.97); }
+    #compose-btn:disabled { opacity: .35; cursor: not-allowed; }
+
+    #compose-status {
+      color: var(--muted);
+      font-size: 13px;
+      flex: 1;
+    }
+
+    .compose-key-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .compose-key-row input {
+      flex: 1;
+      font-size: 13px;
+      padding: 8px 10px;
+    }
+    .key-toggle {
+      background: none;
+      border: 1px solid #333;
+      border-radius: 6px;
+      color: #555;
+      cursor: pointer;
+      font-size: 12px;
+      padding: 6px 10px;
+      white-space: nowrap;
+    }
+    .key-toggle:hover { color: #888; border-color: #555; }
+
+    /* ── Reference track ── */
+    .ref-file-btn {
+      display: block;
+      width: 100%;
+      background: #1a1a1a;
+      border: 1px dashed #333;
+      border-radius: 7px;
+      color: #666;
+      cursor: pointer;
+      font-size: 13px;
+      padding: 9px 12px;
+      text-align: center;
+      transition: border-color .2s, color .2s;
+    }
+    .ref-file-btn:hover { border-color: #555; color: #999; }
+    #ref-file-input { display: none; }
+    #ref-file-label {
+      display: none;
+      background: #101a10;
+      border: 1px solid #1e3e1e;
+      border-radius: 6px;
+      color: #6ecf8e;
+      font-size: 12px;
+      margin-top: 6px;
+      padding: 7px 10px;
+      word-break: break-all;
+    }
+    #ref-clear-btn {
+      background: none;
+      border: none;
+      color: #555;
+      cursor: pointer;
+      float: right;
+      font-size: 13px;
+      padding: 0 0 0 8px;
+    }
+    #ref-clear-btn:hover { color: #e86c6c; }
+
+    /* ── Misc ── */
+    .sep { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+    .hint { color: var(--muted); font-size: 13px; margin-top: 6px; }
+
+    #error-box {
+      display: none;
+      background: #2a1010;
+      border: 1px solid #6a2020;
+      border-radius: 8px;
+      color: var(--red);
+      font-size: 14px;
+      margin-top: 12px;
+      padding: 12px 16px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Squaawke <span style="color:var(--accent)">Local</span></h1>
+    <div class="result-actions">
+      ${audioSrc ? `<a href="${audioSrc}" download="squaawke-${entry.id}.wav">
+        <button class="btn-sm accent">⬇ Download</button>
+      </a>` : ''}
+      <button class="btn-sm" onclick="remixEntry('${entry.id}')">↻ Remix</button>
+      <button class="btn-sm" onclick="copyPrompt('${entry.id}')">⎘ Copy prompt</button>
+      ${audioSrc ? `<button class="btn-sm stem-btn" id="stemBtn-${entry.id}"
+        onclick="startStemJob('${entry.id}')">✂ Stems → Ableton</button>` : ''}
+    </div>
+
+    <div class="stem-panel" id="stemPanel-${entry.id}" style="display:none">
+      <div class="stem-panel-title">Generating stems with seed ${entry.seed || '?'}</div>
+      <div class="stem-tracks" id="stemTracks-${entry.id}">
+        ${['Vocals','Drums','Bass','Guitar','Piano','Other'].map(s => `
+          <div class="stem-row" id="stemRow-${entry.id}-${s}">
+            <span class="stem-dot pending" id="stemDot-${entry.id}-${s}"></span>
+            <span class="stem-name">${s}</span>
+            <span class="stem-status" id="stemStat-${entry.id}-${s}">waiting…</span>
+          </div>`).join('')}
+      </div>
+      <div class="stem-footer" id="stemFooter-${entry.id}" style="display:none">
+        <span id="stemMsg-${entry.id}">Stems ready — Finder window opened</span>
+        <button class="btn-sm accent" onclick="exportStems('${entry.id}')">⬇ Download stems</button>
+      </div>
+    </div>
+  `;
+
+  if (prepend && container.firstChild) {
+    container.insertBefore(card, container.firstChild);
+  } else {
+    container.appendChild(card);
+  }
+</header>
+
+<div class="main">
+
+  <!-- ── Left: prompt + lyrics ── -->
+  <div style="min-width:0">
+
+    <!-- ✦ Compose with Claude card -->
+    <div class="card" style="margin-bottom:16px;border-color:#2a1e40">
+      <div class="card-title" style="color:#a06ce8">✦ Compose with Claude</div>
+
+      <textarea id="compose-idea"
+        placeholder="Describe your song idea… e.g. 'a melancholic late-night city drive, rain on glass, lost in thought about someone who left'"
+      ></textarea>
+
+      <div class="compose-key-row" id="compose-key-row">
+        <input type="password" id="compose-api-key" placeholder="Anthropic API key  (sk-ant-…)">
+        <button class="key-toggle" id="key-toggle-btn" onclick="toggleKeyVis()">Show</button>
+      </div>
+      <div class="hint" style="margin-bottom:10px;margin-top:-4px">
+        Key stored in your browser only — never leaves this machine.
+        Get one at <a href="https://console.anthropic.com/keys" target="_blank"
+          style="color:#7a5cb8;text-decoration:none">console.anthropic.com</a>
+      </div>
+
+      <div style="display:flex;gap:10px;align-items:center">
+        <button id="compose-btn">✦ Compose</button>
+        <span id="compose-status"></span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Describe the music</div>
+
+      <textarea id="prompt-input"
+        placeholder="trip hop, dark, cinematic, sparse piano, vinyl crackle, female vocal, melancholic…"
+        rows="3"></textarea>
+
+      <!-- Genre tags -->
+      <div class="tag-group">
+        <div class="tag-label">Genre</div>
+        <div class="tags" id="genre-tags">
+          <span class="tag" data-val="trip hop">Trip Hop</span>
+          <span class="tag" data-val="psytrance">Psytrance</span>
+          <span class="tag" data-val="shoegaze">Shoegaze</span>
+          <span class="tag" data-val="ambient">Ambient</span>
+          <span class="tag" data-val="drone">Drone</span>
+          <span class="tag" data-val="jazz">Jazz</span>
+          <span class="tag" data-val="hip hop">Hip Hop</span>
+          <span class="tag" data-val="post-rock">Post-Punk</span>
+          <span class="tag" data-val="synthwave">Synthwave</span>
+          <span class="tag" data-val="lo-fi">Lo-Fi</span>
+          <span class="tag" data-val="folk">Folk</span>
+          <span class="tag" data-val="metal">Metal</span>
+          <span class="tag" data-val="orchestral">Orchestral</span>
+          <span class="tag" data-val="dub">Dub reggae</span>
+          <span class="tag" data-val="drum and bass">DnB</span>
+             <span class="tag" data-val="dubstep">Dubstep</span>
+             <span class="tag" data-val="yodel">Yodel</span>
+        </div>
+      </div>
+
+      <!-- Mood tags -->
+      <div class="tag-group">
+        <div class="tag-label">Mood</div>
+        <div class="tags" id="mood-tags">
+          <span class="tag" data-val="dark">Dark</span>
+          <span class="tag" data-val="ethereal">Ethereal</span>
+          <span class="tag" data-val="hypnotic">Hypnotic</span>
+          <span class="tag" data-val="euphoric">Euphoric</span>
+          <span class="tag" data-val="melancholic">Melancholic</span>
+          <span class="tag" data-val="aggressive">Aggressive</span>
+          <span class="tag" data-val="dreamy">Dreamy</span>
+          <span class="tag" data-val="cinematic">Cinematic</span>
+          <span class="tag" data-val="meditative">Meditative</span>
+          <span class="tag" data-val="tense">Tense</span>
+        </div>
+      </div>
+
+      <!-- Vocal tags -->
+      <div class="tag-group">
+        <div class="tag-label">Vocals</div>
+        <div class="tags" id="vocal-tags">
+          <span class="tag" data-val="[Instrumental]" data-exclusive="vocal">Instrumental</span>
+          <span class="tag" data-val="female vocal" data-exclusive="vocal">Female</span>
+          <span class="tag" data-val="male vocal" data-exclusive="vocal">Male</span>
+          <span class="tag" data-val="choir" data-exclusive="vocal">Choir</span>
+          <span class="tag" data-val="rap vocals" data-exclusive="vocal">Rap</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lyrics card -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Lyrics <span style="color:#333;font-weight:400;text-transform:none;letter-spacing:0">(optional — leave blank to auto-generate)</span></div>
+      <div class="section-btns">
+        <button class="sec-btn" onclick="insertSection('[verse]')">Verse</button>
+        <button class="sec-btn" onclick="insertSection('[chorus]')">Chorus</button>
+        <button class="sec-btn" onclick="insertSection('[pre-chorus]')">Pre-Ch.</button>
+        <button class="sec-btn" onclick="insertSection('[bridge]')">Bridge</button>
+        <button class="sec-btn" onclick="insertSection('[hook]')">Hook</button>
+        <button class="sec-btn" onclick="insertSection('[outro]')">Outro</button>
+        <button class="sec-btn" onclick="insertSection('[Instrumental]')" style="margin-left:auto">No vocals</button>
+      </div>
+      <textarea id="lyrics-input"
+        placeholder="[verse]&#10;Your lyrics here…&#10;&#10;[chorus]&#10;…"
+        rows="8"></textarea>
+    </div>
+
+    <!-- Progress + output -->
+    <div id="progress-wrap" class="card">
+      <div class="progress-stages">
+        <div class="stage" id="stage-lm">LM — codes</div>
+        <div class="stage" id="stage-dit">DiT — synth</div>
+        <div class="stage" id="stage-done">Done</div>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="prog-fill"></div>
+      </div>
+      <div id="progress-msg">Queued…</div>
+      <div id="error-box"></div>
+    </div>
+
+    <div id="output-wrap">
+      <div class="player-card">
+        <div class="player-prompt" id="player-prompt"></div>
+        <audio id="player" controls></audio>
+        <div class="player-actions">
+          <button class="act-btn" id="dl-btn">↓ Download</button>
+          <button class="act-btn" id="remix-btn">⟳ Remix</button>
+          <button class="act-btn" id="reveal-btn">Finder</button>
+          <button class="act-btn" id="stems-btn" style="border-color:#2a3a6a;margin-left:auto">⧉ Stems</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- History -->
+    <div id="history-wrap" style="display:none">
+      <hr class="sep">
+      <div class="card-title" style="margin-bottom:10px">Recent</div>
+      <div id="history-list"></div>
+    </div>
+  </div>
+
+  <!-- ── Right: settings ── -->
+  <div>
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Settings</div>
+
+      <!-- Duration -->
+      <div class="setting-row">
+        <div class="setting-label">Duration</div>
+        <div class="dur-pills">
+          <div class="dur-pill" data-sec="15">15s</div>
+          <div class="dur-pill active" data-sec="30">30s</div>
+          <div class="dur-pill" data-sec="45">45s</div>
+          <div class="dur-pill" data-sec="60">60s</div>
+          <div class="dur-pill" data-sec="90">90s</div>
+          <div class="dur-pill" data-sec="120">2m</div>
+          <div class="dur-pill" data-sec="180">3m</div>
+          <div class="dur-pill" data-sec="300">5m</div>
+          <div class="dur-pill" data-sec="420">7m</div>
+        </div>
+      </div>
+
+      <!-- Key -->
+      <div class="setting-row">
+        <div class="setting-label">Key</div>
+        <select id="key-sel">
+          <option value="">Auto</option>
+          {% for k in ["C major","C minor","C# major","C# minor","D major","D minor","D# major","D# minor","E major","E minor","F major","F minor","F# major","F# minor","G major","G minor","G# major","G# minor","A major","A minor","A# major","A# minor","B major","B minor"] %}
+          <option>{{ k }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- BPM -->
+      <div class="setting-row">
+        <div class="setting-label">BPM <span style="font-size:11px;color:#444">(0 = auto)</span></div>
+        <input type="number" id="bpm-input" value="0" min="0" max="300">
+      </div>
+
+      <!-- Reference track -->
+      <div class="setting-row">
+        <div class="setting-label">Reference Track <span style="font-size:11px;color:#333">(style transfer)</span></div>
+        <input type="file" id="ref-file-input" accept=".wav,.mp3,.flac,.aac,.m4a">
+        <label for="ref-file-input" class="ref-file-btn" id="ref-file-btn">+ Add reference audio</label>
+        <div id="ref-file-label"></div>
+        <div class="slider-row" id="ref-strength-row" style="display:none;margin-top:8px">
+          <span style="font-size:12px;color:var(--muted);white-space:nowrap">Strength</span>
+          <input type="range" id="ref-strength" min="0" max="1" step="0.05" value="0.5">
+          <span class="slider-val" id="ref-strength-val">0.50</span>
+        </div>
+      </div>
+
+      <!-- LM cfg scale -->
+      <div class="setting-row">
+        <div class="setting-label">LM guidance</div>
+        <div class="slider-row">
+          <input type="range" id="lm-cfg" min="1" max="5" step="0.1" value="2.0">
+          <span class="slider-val" id="lm-cfg-val">2.0</span>
+        </div>
+      </div>
+
+      <!-- LM temperature -->
+      <div class="setting-row">
+        <div class="setting-label">LM temperature</div>
+        <div class="slider-row">
+          <input type="range" id="lm-temp" min="0.5" max="1.5" step="0.05" value="0.85">
+          <span class="slider-val" id="lm-temp-val">0.85</span>
+        </div>
+      </div>
+
+      <!-- Inference steps -->
+      <div class="setting-row">
+        <div class="setting-label">DiT steps</div>
+        <div class="dur-pills">
+          <div class="dur-pill" data-steps="4">4</div>
+          <div class="dur-pill active" data-steps="8">8</div>
+          <div class="dur-pill" data-steps="12">12</div>
+          <div class="dur-pill" data-steps="20">20</div>
+        </div>
+      </div>
+
+      <!-- Seed -->
+      <div class="setting-row">
+        <div class="setting-label">Seed <span style="font-size:11px;color:#444">(-1 = random)</span></div>
+        <input type="number" id="seed-input" value="-1">
+      </div>
+
+      <hr class="sep" style="margin:14px 0">
+
+      <!-- LM model -->
+      <div class="setting-row">
+        <div class="setting-label">Language model</div>
+        <select id="lm-sel">
+          {% for label, file in lm_options %}
+          <option value="{{ file }}" {% if file == default_lm %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- DiT model -->
+      <div class="setting-row">
+        <div class="setting-label">Diffusion model</div>
+        <select id="dit-sel">
+          {% for label, file in dit_options %}
+          <option value="{{ file }}" {% if file == default_dit %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Model availability chips -->
+      <div id="model-chips" style="margin-top:6px"></div>
+    </div>
+
+    <button id="gen-btn">Generate</button>
+    <div class="hint" style="text-align:center;margin-top:10px">Metal (MPS) · local inference</div>
+  </div>
+
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+const state = {
+  duration: 30,
+  steps: 8,
+  jobId: null,
+  pollTimer: null,
+};
+const HIST_KEY = "acestep_local_history";
+
+// ── System check ───────────────────────────────────────────────────────────
+async function checkSystem() {
+  try {
+    const r = await fetch("/api/models");
+    const d = await r.json();
+    const allReady = d.binaries_ready && d.text_encoder_ready && d.vae_ready &&
+                     d.lm_options.some(m => m.ready) &&
+                     d.dit_options.some(m => m.ready);
+
+    document.getElementById("status-dot").className = "dot " + (allReady ? "ready" : "error");
+    document.getElementById("status-text").textContent = allReady
+      ? "ready" : "setup required — run setup.sh";
+
+    // Mark model selects
+    const chips = document.getElementById("model-chips");
+    chips.innerHTML = "";
+    [...d.lm_options, ...d.dit_options].forEach(m => {
+      const c = document.createElement("div");
+      c.className = "model-chip " + (m.ready ? "ready" : "missing");
+      c.textContent = (m.ready ? "✓ " : "✗ ") + m.file.replace("acestep-", "").replace(".gguf", "");
+      chips.appendChild(c);
+    });
+  } catch {
+    document.getElementById("status-dot").className = "dot error";
+    document.getElementById("status-text").textContent = "server offline";
+  }
+}
+checkSystem();
+
+// ── Tags ───────────────────────────────────────────────────────────────────
+document.querySelectorAll(".tag").forEach(tag => {
+  tag.addEventListener("click", () => {
+    const exclusive = tag.dataset.exclusive;
+    if (exclusive) {
+      // deactivate others in same group
+      tag.closest(".tags").querySelectorAll(".tag[data-exclusive]").forEach(t => {
+        if (t !== tag) t.classList.remove("active");
+      });
+    }
+    tag.classList.toggle("active");
+    rebuildPrompt();
+  });
+});
+
+function rebuildPrompt() {
+  const active = [...document.querySelectorAll(".tag.active")].map(t => t.dataset.val);
+  const current = document.getElementById("prompt-input").value;
+  // Only auto-fill if empty or only has previous tags
+  if (active.length) {
+    const nonInstrumental = active.filter(v => v !== "[Instrumental]");
+    document.getElementById("prompt-input").value = nonInstrumental.join(", ");
+    // Handle [Instrumental] in lyrics
+    if (active.includes("[Instrumental]")) {
+      document.getElementById("lyrics-input").value = "[Instrumental]";
+    }
+  }
+}
+
+// ── Duration pills ──────────────────────────────────────────────────────────
+document.querySelectorAll(".dur-pill[data-sec]").forEach(p => {
+  p.addEventListener("click", () => {
+    document.querySelectorAll(".dur-pill[data-sec]").forEach(x => x.classList.remove("active"));
+    p.classList.add("active");
+    state.duration = parseInt(p.dataset.sec);
+  });
+});
+
+document.querySelectorAll(".dur-pill[data-steps]").forEach(p => {
+  p.addEventListener("click", () => {
+    document.querySelectorAll(".dur-pill[data-steps]").forEach(x => x.classList.remove("active"));
+    p.classList.add("active");
+    state.steps = parseInt(p.dataset.steps);
+  });
+});
+
+// ── Sliders ─────────────────────────────────────────────────────────────────
+document.getElementById("lm-cfg").addEventListener("input", function() {
+  document.getElementById("lm-cfg-val").textContent = (+this.value).toFixed(1);
+});
+document.getElementById("lm-temp").addEventListener("input", function() {
+  document.getElementById("lm-temp-val").textContent = (+this.value).toFixed(2);
+});
+
+// ── Lyrics sections ─────────────────────────────────────────────────────────
+function insertSection(tag) {
+  const ta  = document.getElementById("lyrics-input");
+  const pos = ta.selectionStart;
+  const val = ta.value;
+  const nl  = val.length > 0 && !val.endsWith("\n") ? "\n" : "";
+  ta.value  = val.slice(0, pos) + nl + tag + "\n" + val.slice(pos);
+  ta.focus();
+  ta.selectionStart = ta.selectionEnd = pos + nl.length + tag.length + 1;
+}
+window.insertSection = insertSection;
+
+// ── Generate ────────────────────────────────────────────────────────────────
+document.getElementById("gen-btn").addEventListener("click", startGeneration);
+
+async function startGeneration() {
+  const prompt  = document.getElementById("prompt-input").value.trim();
+  const lyrics  = document.getElementById("lyrics-input").value.trim();
+
+  if (!prompt) {
+    document.getElementById("prompt-input").focus();
+    document.getElementById("prompt-input").style.borderColor = "#e86c6c";
+    setTimeout(() => document.getElementById("prompt-input").style.borderColor = "", 1500);
+    return;
+  }
+
+  const params = {
+    prompt,
+    lyrics,
+    duration:         state.duration,
+    bpm:              parseInt(document.getElementById("bpm-input").value) || 0,
+    seed:             parseInt(document.getElementById("seed-input").value) || -1,
+    lm_cfg_scale:     parseFloat(document.getElementById("lm-cfg").value),
+    lm_temperature:   parseFloat(document.getElementById("lm-temp").value),
+    inference_steps:  state.steps,
+    key:              document.getElementById("key-sel").value,
+    lm_model:         document.getElementById("lm-sel").value,
+    dit_model:        document.getElementById("dit-sel").value,
+  };
+
+  if (refAudioPath) {
+    params.ref_audio_path  = refAudioPath;
+    params.audio_cfg_scale = parseFloat(document.getElementById("ref-strength").value);
+  }
+
+  document.getElementById("gen-btn").disabled = true;
+  document.getElementById("output-wrap").style.display = "none";
+  showProgress();
+
+  try {
+    const r    = await fetch("/api/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(params),
+    });
+    const data = await r.json();
+    if (data.error) { showError(data.error); return; }
+    state.jobId = data.job_id;
+    poll();
+  } catch(e) { showError(String(e)); }
+}
+
+// ── Polling ─────────────────────────────────────────────────────────────────
+async function poll() {
+  if (!state.jobId) return;
+  try {
+    const r   = await fetch(`/api/status/${state.jobId}`);
+    const job = await r.json();
+
+    updateStages(job.status);
+    document.getElementById("prog-fill").style.width = (job.progress || 5) + "%";
+    document.getElementById("progress-msg").textContent = job.message || "";
+
+    if (job.status === "done") {
+      onDone(job);
+      return;
+    }
+    if (job.status === "error") {
+      showError(job.message);
+      return;
+    }
+    state.pollTimer = setTimeout(poll, 1500);
+  } catch {
+    state.pollTimer = setTimeout(poll, 3000);
+  }
+}
+
+function updateStages(status) {
+  const lm   = document.getElementById("stage-lm");
+  const dit  = document.getElementById("stage-dit");
+  const done = document.getElementById("stage-done");
+
+  if (status === "lm") {
+    lm.className = "stage active"; dit.className = "stage"; done.className = "stage";
+  } else if (status === "dit") {
+    lm.className = "stage done"; dit.className = "stage active"; done.className = "stage";
+  } else if (status === "done") {
+    lm.className = "stage done"; dit.className = "stage done"; done.className = "stage done";
+  }
+}
+
+function onDone(job) {
+  clearTimeout(state.pollTimer);
+  document.getElementById("gen-btn").disabled = false;
+  document.getElementById("progress-wrap").style.display = "none";
+
+  const player = document.getElementById("player");
+  player.src   = job.audio_url + "?t=" + Date.now();
+  document.getElementById("player-prompt").textContent = job.prompt || "";
+  document.getElementById("output-wrap").style.display = "block";
+
+  document.getElementById("dl-btn").onclick = () => {
+    const a = document.createElement("a");
+    a.href = job.audio_url + "?download=1";
+    a.click();
+  };
+  document.getElementById("remix-btn").onclick = () => {
+    document.getElementById("seed-input").value = Math.floor(Math.random() * 99999);
+    startGeneration();
+  };
+  document.getElementById("reveal-btn").onclick = async () => {
+    const a = document.createElement("a");
+    a.href = job.audio_url + "?download=1";
+    a.download = job.audio_url.split("/").pop() + ".wav";
+    a.click();
+  };
+  document.getElementById("stems-btn").onclick = () => {
+    const filePath = job.file || "";
+    const url = "http://localhost:5003/demucs" + (filePath ? "?file=" + encodeURIComponent(filePath) : "");
+    window.open(url, "_blank");
+  };
+
+  // History
+  saveHistory({ prompt: job.prompt, job_id: state.jobId, ts: Date.now() });
+  renderHistory();
+}
+
+function showError(msg) {
+  clearTimeout(state.pollTimer);
+  document.getElementById("gen-btn").disabled = false;
+  const eb = document.getElementById("error-box");
+  eb.style.display = "block";
+  eb.textContent   = "⚠ " + msg;
+  document.getElementById("progress-msg").textContent = "Failed";
+  document.getElementById("prog-fill").style.width = "0%";
+}
+
+function showProgress() {
+  const pw = document.getElementById("progress-wrap");
+  pw.style.display = "block";
+  document.getElementById("error-box").style.display = "none";
+  document.getElementById("prog-fill").style.width = "5%";
+  document.getElementById("stage-lm").className = "stage";
+  document.getElementById("stage-dit").className = "stage";
+  document.getElementById("stage-done").className = "stage";
+  document.getElementById("progress-msg").textContent = "Queued…";
+}
+
+// ── History ─────────────────────────────────────────────────────────────────
+function saveHistory(item) {
+  let h = [];
+  try { h = JSON.parse(localStorage.getItem(HIST_KEY) || "[]"); } catch {}
+  h.unshift(item);
+  h = h.slice(0, 20);
+  localStorage.setItem(HIST_KEY, JSON.stringify(h));
+}
+
+function renderHistory() {
+  let h = [];
+  try { h = JSON.parse(localStorage.getItem(HIST_KEY) || "[]"); } catch {}
+  if (!h.length) return;
+  document.getElementById("history-wrap").style.display = "block";
+  const list = document.getElementById("history-list");
+  list.innerHTML = h.map(item => {
+    const t = new Date(item.ts);
+    const ago = timeAgo(item.ts);
+    return `<div class="hist-item" onclick="reloadHistItem('${item.job_id}','${item.prompt.replace(/'/g,"\\'").slice(0,120)}')">
+      <span class="hist-prompt">${item.prompt.slice(0,80)}</span>
+      <span class="hist-time">${ago}</span>
+    </div>`;
+  }).join("");
+}
+function exportStems(entryId) {
+  const job = stemJobs[entryId];
+  if (!job) return;
+  fetch(`/api/stems/export/${job.jobId}`, { method: 'POST' })
+    .then(r => r.json())
+    .then(data => {
+      const msg = document.getElementById(`stemMsg-${entryId}`);
+      if (msg && data.folder) msg.textContent = 'Saved to: ' + data.folder;
+      showToast('Stems downloaded — Finder opened', 'success');
+    })
+    .catch(err => showToast('Export failed: ' + err, 'error'));
+}
+function timeAgo(ts) {
+  const d = (Date.now() - ts) / 1000;
+  if (d < 60) return "just now";
+  if (d < 3600) return Math.floor(d/60) + "m ago";
+  if (d < 86400) return Math.floor(d/3600) + "h ago";
+  return Math.floor(d/86400) + "d ago";
+}
+
+async function reloadHistItem(jobId, prompt) {
+  const r   = await fetch(`/api/status/${jobId}`);
+  const job = await r.json();
+  if (job.status === "done") {
+    const player = document.getElementById("player");
+    player.src   = job.audio_url + "?t=" + Date.now();
+    document.getElementById("player-prompt").textContent = prompt;
+    document.getElementById("output-wrap").style.display = "block";
+    state.jobId = jobId;
+  }
+}
+
+renderHistory();
+
+// ── Reference Track ──────────────────────────────────────────────────────────
+let refAudioPath = null;   // server-side path after upload
+
+document.getElementById("ref-file-input").addEventListener("change", async function() {
+  const file = this.files[0];
+  if (!file) return;
+
+  const label = document.getElementById("ref-file-label");
+  label.innerHTML = `<button id="ref-clear-btn" title="Remove">✕</button> ${file.name}`;
+  label.style.display = "block";
+  document.getElementById("ref-strength-row").style.display = "flex";
+  document.getElementById("ref-file-btn").style.display = "none";
+
+  document.getElementById("ref-clear-btn").addEventListener("click", clearRef);
+
+  // Upload to server
+  const fd = new FormData();
+  fd.append("file", file);
+  try {
+    const r = await fetch("/api/upload_ref", { method: "POST", body: fd });
+    const d = await r.json();
+    if (d.path) {
+      refAudioPath = d.path;
+    } else {
+      label.innerHTML += ' <span style="color:#e86c6c">(upload failed)</span>';
+    }
+  } catch(e) {
+    label.innerHTML += ' <span style="color:#e86c6c">(upload failed)</span>';
+  }
+});
+
+function clearRef() {
+  refAudioPath = null;
+  document.getElementById("ref-file-input").value = "";
+  document.getElementById("ref-file-label").style.display = "none";
+  document.getElementById("ref-file-btn").style.display = "block";
+  document.getElementById("ref-strength-row").style.display = "none";
+}
+
+document.getElementById("ref-strength").addEventListener("input", function() {
+  document.getElementById("ref-strength-val").textContent = (+this.value).toFixed(2);
+});
+
+// ── Claude Compose ───────────────────────────────────────────────────────────
+const CLAUDE_KEY_STORE = "ace_claude_api_key";
+
+(function initCompose() {
+  const saved = localStorage.getItem(CLAUDE_KEY_STORE);
+  if (saved) document.getElementById("compose-api-key").value = saved;
+})();
+
+function toggleKeyVis() {
+  const inp = document.getElementById("compose-api-key");
+  const btn = document.getElementById("key-toggle-btn");
+  if (inp.type === "password") {
+    inp.type = "text";
+    btn.textContent = "Hide";
+  } else {
+    inp.type = "password";
+    btn.textContent = "Show";
+  }
+}
+
+document.getElementById("compose-btn").addEventListener("click", async () => {
+  const idea   = document.getElementById("compose-idea").value.trim();
+  const apiKey = document.getElementById("compose-api-key").value.trim();
+  const status = document.getElementById("compose-status");
+  const btn    = document.getElementById("compose-btn");
+
+  // Validate
+  if (!idea) {
+    const ta = document.getElementById("compose-idea");
+    ta.style.borderColor = "#e86c6c";
+    setTimeout(() => ta.style.borderColor = "", 1500);
+    return;
+  }
+  if (!apiKey) {
+    const ki = document.getElementById("compose-api-key");
+    ki.style.borderColor = "#e86c6c";
+    setTimeout(() => ki.style.borderColor = "", 1500);
+    status.textContent = "API key required";
+    status.style.color = "#e86c6c";
+    return;
+  }
+
+  localStorage.setItem(CLAUDE_KEY_STORE, apiKey);
+  btn.disabled = true;
+  status.style.color = "var(--muted)";
+  status.textContent = "Composing…";
+
+  try {
+    const r = await fetch("/api/compose", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idea, api_key: apiKey }),
+    });
+    const d = await r.json();
+
+    if (d.error) {
+      status.textContent = "⚠ " + d.error;
+      status.style.color = "#e86c6c";
+    } else {
+      document.getElementById("prompt-input").value = d.style  || "";
+      document.getElementById("lyrics-input").value = d.lyrics || "";
+      // Clear any active tags since Claude set the prompt
+      document.querySelectorAll(".tag.active").forEach(t => t.classList.remove("active"));
+      status.style.color = "var(--green)";
+      status.textContent = "✓ Style + lyrics filled — review and generate";
+    }
+  } catch(e) {
+    status.textContent = "⚠ " + String(e);
+    status.style.color = "#e86c6c";
+  } finally {
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

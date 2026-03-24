@@ -1,0 +1,6 @@
+{
+  "name": "demucs-bridge",
+  "version": "1.0.0",
+  "description": "Max 8 node.script bridge for DEMUCS stem separation",
+  "main": "demucs_bridge.js"
+}

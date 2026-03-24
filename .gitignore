@@ -1,0 +1,137 @@
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+secrets/
+credentials/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
+.venv
+venv/
+ENV/
+env/
+
+# ML Models & Weights
+models/
+*.gguf
+*.safetensors
+*.pt
+*.pth
+*.bin
+*.ckpt
+*.h5
+*.pb
+*.onnx
+checkpoints/
+weights/
+*.model
+*.pkl
+*.pickle
+
+# Temporary & Cache
+*.log
+*.tmp
+*.cache
+.cache/
+tmp/
+temp/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# IDE & Editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.code-workspace
+*.code-workspace
+
+# Build artifacts
+acestep.cpp/build/
+acestep.cpp/out/
+*.o
+*.a
+*.dylib
+*.dll
+*.exe
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+
+# Audio outputs & working directories
+/tmp/acestep-work/
+/tmp/acestep-ref/
+*.wav
+*.mp3
+*.flac
+*.ogg
+output/
+outputs/
+generations/
+
+# Demucs model downloads
+demucs_live/models/
+demucs_max/models/
+
+# macOS
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+.hypothesis/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Node (if any frontend tooling)
+node_modules/
+package-lock.json
+yarn.lock

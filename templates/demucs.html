@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DEMUCS Stem Separator</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #111;
+      color: #e0e0e0;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 17px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      color: #888;
+      font-size: 15px;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      background: #1e1e1e;
+      border: 1px solid #2e2e2e;
+      border-radius: 12px;
+      padding: 32px;
+      width: 100%;
+      max-width: 680px;
+      margin-bottom: 24px;
+    }
+
+    /* ── Drop zone ── */
+    #dropzone {
+      border: 2px dashed #444;
+      border-radius: 10px;
+      padding: 48px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      margin-bottom: 24px;
+    }
+
+    #dropzone.drag-over {
+      border-color: #6c8ee8;
+      background: #1a2040;
+    }
+
+    #dropzone .icon { font-size: 48px; margin-bottom: 12px; }
+
+    #dropzone p {
+      color: #aaa;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    #dropzone p strong { color: #ccc; }
+
+    #file-input { display: none; }
+
+    /* ── Path input ── */
+    .input-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      background: #141414;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: #e0e0e0;
+      font-size: 16px;
+      padding: 12px 16px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus { border-color: #6c8ee8; }
+    input[type="text"]::placeholder { color: #555; }
+
+    /* ── Buttons ── */
+    .btn {
+      background: #6c8ee8;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      padding: 12px 28px;
+      transition: background 0.2s, transform 0.1s;
+      white-space: nowrap;
+    }
+
+    .btn:hover { background: #8aa6f5; }
+    .btn:active { transform: scale(0.97); }
+    .btn:disabled { background: #333; color: #666; cursor: not-allowed; }
+
+    .btn-secondary {
+      background: #2a2a2a;
+      border: 1px solid #3a3a3a;
+    }
+    .btn-secondary:hover { background: #333; }
+
+    /* ── Selected file label ── */
+    #file-label {
+      display: none;
+      background: #1a2a1a;
+      border: 1px solid #2a4a2a;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      font-size: 15px;
+      color: #8ecf8e;
+      word-break: break-all;
+    }
+
+    /* ── Separate button row ── */
+    .btn-row {
+      display: flex;
+      justify-content: center;
+    }
+
+    #separate-btn {
+      font-size: 18px;
+      padding: 14px 48px;
+      letter-spacing: 1px;
+    }
+
+    /* ── Progress / Status ── */
+    #status-card { display: none; }
+
+    #status-card h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #ccc;
+    }
+
+    #progress-bar-wrap {
+      background: #2a2a2a;
+      border-radius: 6px;
+      height: 8px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    #progress-bar {
+      background: #6c8ee8;
+      height: 100%;
+      width: 0%;
+      transition: width 0.4s;
+    }
+
+    #status-msg {
+      color: #888;
+      font-size: 15px;
+      margin-bottom: 20px;
+      min-height: 22px;
+    }
+
+    /* ── Stem tiles ── */
+    #stems-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .stem-tile {
+      background: #141414;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 14px 16px;
+      transition: border-color 0.3s;
+    }
+
+    .stem-tile.done   { border-color: #3a6a3a; }
+    .stem-tile.error  { border-color: #6a2a2a; }
+    .stem-tile.active { border-color: #6c8ee8; animation: pulse 1.2s infinite; }
+
+    @keyframes pulse {
+      0%,100% { border-color: #6c8ee8; }
+      50%      { border-color: #3a5ab0; }
+    }
+
+    .stem-name {
+      font-size: 15px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+      color: #bbb;
+    }
+
+    .stem-status {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .stem-tile.done  .stem-status { color: #6ecf6e; }
+    .stem-tile.error .stem-status { color: #cf6e6e; }
+
+    .stem-download {
+      display: inline-block;
+      margin-top: 8px;
+      color: #6c8ee8;
+      font-size: 13px;
+      text-decoration: none;
+    }
+    .stem-download:hover { text-decoration: underline; }
+
+    /* ── Folder link ── */
+    #folder-section {
+      display: none;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #2a2a2a;
+      text-align: center;
+    }
+
+    #folder-section p { color: #888; font-size: 15px; margin-bottom: 10px; }
+
+    /* ── Colors per stem ── */
+    .stem-tile[data-stem="vocals"]  .stem-name { color: #e8a06c; }
+    .stem-tile[data-stem="drums"]   .stem-name { color: #e86c6c; }
+    .stem-tile[data-stem="bass"]    .stem-name { color: #6c8ee8; }
+    .stem-tile[data-stem="guitar"]  .stem-name { color: #6cca6c; }
+    .stem-tile[data-stem="piano"]   .stem-name { color: #c8e86c; }
+    .stem-tile[data-stem="other"]   .stem-name { color: #b06ce8; }
+
+    /* ── Nav ── */
+    .nav-link {
+      position: fixed;
+      top: 20px;
+      left: 24px;
+      color: #555;
+      text-decoration: none;
+      font-size: 15px;
+    }
+    .nav-link:hover { color: #aaa; }
+
+    /* ── Ableton notice ── */
+    #ableton-notice {
+      display: none;
+      margin-top: 20px;
+      background: #1a2a1a;
+      border: 1px solid #2a4a2a;
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: 15px;
+      color: #8ecf8e;
+      text-align: center;
+    }
+
+    @media (max-width: 520px) {
+      #stems-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<a href="/" class="nav-link">← back</a>
+
+<h1>Stem Separator</h1>
+<p class="subtitle">htdemucs_6s · Apple MPS · 6 stems</p>
+
+<!-- Input card -->
+<div class="card" id="input-card">
+  <!-- Drop zone -->
+  <div id="dropzone">
+    <div class="icon">🎵</div>
+    <p><strong>Drop an audio file here</strong></p>
+    <p style="margin-top:8px">or click to browse · WAV, MP3, FLAC, AAC</p>
+  </div>
+  <input type="file" id="file-input" accept=".wav,.mp3,.flac,.aac,.m4a,.aiff,.ogg">
+
+  <!-- Selected file display -->
+  <div id="file-label"></div>
+
+  <!-- Manual path input -->
+  <div class="input-row">
+    <input type="text" id="path-input" placeholder="or paste an absolute file path  e.g. /Users/you/Music/track.wav">
+  </div>
+
+  <!-- Separate button -->
+  <div class="btn-row">
+    <button class="btn" id="separate-btn">SEPARATE</button>
+  </div>
+</div>
+
+<!-- Status card -->
+<div class="card" id="status-card">
+  <h2 id="status-heading">Separating…</h2>
+  <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+  <div id="status-msg">Starting demucs…</div>
+
+  <div id="stems-grid">
+    <!-- Filled by JS -->
+  </div>
+
+  <div id="ableton-notice">
+    ✓ Ableton notified — tracks should appear in your session
+  </div>
+
+  <div id="folder-section">
+    <p>Stems saved to disk</p>
+    <button class="btn btn-secondary" id="new-btn" style="font-size:15px;padding:10px 24px;">
+      Separate another file
+    </button>
+  </div>
+</div>
+
+<script>
+const STEM_NAMES  = ["vocals","drums","bass","guitar","piano","other"];
+let currentJobId  = null;
+let pollTimer     = null;
+let uploadedPath  = null;   // set after file upload completes
+
+// ── Drop zone ──────────────────────────────────────────────────────────────
+const dropzone  = document.getElementById("dropzone");
+const fileInput = document.getElementById("file-input");
+const fileLabel = document.getElementById("file-label");
+
+dropzone.addEventListener("click", () => fileInput.click());
+
+dropzone.addEventListener("dragover", e => {
+  e.preventDefault();
+  dropzone.classList.add("drag-over");
+});
+dropzone.addEventListener("dragleave", () => dropzone.classList.remove("drag-over"));
+dropzone.addEventListener("drop", e => {
+  e.preventDefault();
+  dropzone.classList.remove("drag-over");
+  const file = e.dataTransfer.files[0];
+  if (file) handleFileSelected(file);
+});
+
+fileInput.addEventListener("change", () => {
+  if (fileInput.files[0]) handleFileSelected(fileInput.files[0]);
+});
+
+function handleFileSelected(file) {
+  fileLabel.textContent = "📂 " + file.name;
+  fileLabel.style.display = "block";
+  document.getElementById("path-input").value = "";
+  uploadedPath = null;
+  window._pendingFile = file;
+}
+
+// ── Separate ──────────────────────────────────────────────────────────────
+document.getElementById("separate-btn").addEventListener("click", async () => {
+  const pathInput = document.getElementById("path-input").value.trim();
+  const file      = window._pendingFile;
+
+  if (!pathInput && !file) {
+    alert("Drop a file or enter a file path first.");
+    return;
+  }
+
+  document.getElementById("separate-btn").disabled = true;
+  showStatusCard();
+
+  if (file && !pathInput) {
+    // Upload the file first
+    setStatus("Uploading file…");
+    const fd = new FormData();
+    fd.append("file", file);
+    try {
+      const res  = await fetch("/api/stems/generate_local", { method: "POST", body: fd });
+      const data = await res.json();
+      if (data.error) { showError(data.error); return; }
+      startPolling(data.job_id);
+    } catch(e) { showError(String(e)); }
+  } else {
+    // Send local path
+    const fp = pathInput || uploadedPath;
+    setStatus("Launching demucs…");
+    try {
+      const res  = await fetch("/api/stems/generate_local", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ file_path: fp })
+      });
+      const data = await res.json();
+      if (data.error) { showError(data.error); return; }
+      startPolling(data.job_id);
+    } catch(e) { showError(String(e)); }
+  }
+});
+
+// ── Status card setup ─────────────────────────────────────────────────────
+function showStatusCard() {
+  document.getElementById("input-card").style.opacity = "0.4";
+  document.getElementById("input-card").style.pointerEvents = "none";
+  document.getElementById("status-card").style.display = "block";
+  buildStemTiles();
+}
+
+function buildStemTiles() {
+  const grid = document.getElementById("stems-grid");
+  grid.innerHTML = STEM_NAMES.map(n => `
+    <div class="stem-tile active" id="tile-${n}" data-stem="${n}">
+      <div class="stem-name">${n}</div>
+      <div class="stem-status" id="status-${n}">waiting…</div>
+    </div>
+  `).join("");
+}
+
+// ── Polling ───────────────────────────────────────────────────────────────
+function startPolling(jobId) {
+  currentJobId = jobId;
+  setStatus("Running htdemucs_6s on MPS…");
+  setProgress(10);
+  poll();
+}
+
+async function poll() {
+  if (!currentJobId) return;
+  try {
+    const res  = await fetch(`/api/stems/status/${currentJobId}`);
+    const job  = await res.json();
+    updateTiles(job.stems || {});
+
+    const doneCount = Object.values(job.stems || {}).filter(s => s.status === "done").length;
+    const totalCount = STEM_NAMES.length;
+    setProgress(10 + Math.round((doneCount / totalCount) * 80));
+
+    if (job.status === "ready") {
+      onComplete(job);
+      return;
+    }
+    if (job.status === "error") {
+      const errMsg = Object.values(job.stems || {}).find(s => s.status.startsWith("error"))?.status || "Unknown error";
+      showError(errMsg);
+      return;
+    }
+    pollTimer = setTimeout(poll, 2000);
+  } catch(e) {
+    pollTimer = setTimeout(poll, 3000);
+  }
+}
+
+function updateTiles(stems) {
+  for (const [name, info] of Object.entries(stems)) {
+    const tile   = document.getElementById(`tile-${name}`);
+    const status = document.getElementById(`status-${name}`);
+    if (!tile) continue;
+
+    if (info.status === "done") {
+      tile.className = "stem-tile done";
+      status.textContent = "✓ done";
+      if (info.local_path && !tile.querySelector("a")) {
+        const a = document.createElement("a");
+        a.className  = "stem-download";
+        a.textContent = "reveal in Finder →";
+        a.href = "#";
+        a.addEventListener("click", async e => {
+          e.preventDefault();
+          await fetch(`/api/stems/export/${currentJobId}`, { method: "POST" });
+        });
+        tile.appendChild(a);
+      }
+    } else if (info.status && info.status.startsWith("error")) {
+      tile.className = "stem-tile error";
+      status.textContent = "✗ error";
+    } else {
+      tile.className = "stem-tile active";
+      status.textContent = info.status || "processing…";
+    }
+  }
+}
+
+function onComplete(job) {
+  clearTimeout(pollTimer);
+  setProgress(100);
+  document.getElementById("status-heading").textContent = "Done!";
+  setStatus(`Stems saved to: ${job.folder || "~/Music/AceStep-Stems/"}`);
+  document.getElementById("folder-section").style.display = "block";
+
+  // Show Ableton notice if bridge responded
+  document.getElementById("ableton-notice").style.display = "block";
+}
+
+function showError(msg) {
+  clearTimeout(pollTimer);
+  document.getElementById("status-heading").textContent = "Error";
+  setStatus("⚠ " + msg);
+  setProgress(0);
+  document.getElementById("separate-btn").disabled = false;
+}
+
+function setStatus(msg) { document.getElementById("status-msg").textContent = msg; }
+function setProgress(pct) { document.getElementById("progress-bar").style.width = pct + "%"; }
+
+// ── Auto-fill from URL ?file= param (sent from Squaawke Local) ─────────────
+(function() {
+  const fp = new URLSearchParams(window.location.search).get("file");
+  if (fp) {
+    document.getElementById("path-input").value = fp;
+    document.getElementById("file-label").textContent = "📂 " + fp.split("/").pop();
+    document.getElementById("file-label").style.display = "block";
+  }
+})();
+
+// ── New separation ─────────────────────────────────────────────────────────
+document.getElementById("new-btn").addEventListener("click", () => {
+  clearTimeout(pollTimer);
+  currentJobId = null;
+  window._pendingFile = null;
+  document.getElementById("file-label").style.display = "none";
+  document.getElementById("path-input").value = "";
+  document.getElementById("separate-btn").disabled = false;
+  document.getElementById("status-card").style.display = "none";
+  document.getElementById("ableton-notice").style.display = "none";
+  document.getElementById("folder-section").style.display = "none";
+  document.getElementById("input-card").style.opacity = "1";
+  document.getElementById("input-card").style.pointerEvents = "auto";
+  document.getElementById("status-heading").textContent = "Separating…";
+  setProgress(0);
+  setStatus("Starting demucs…");
+  fileInput.value = "";
+  buildStemTiles();
+});
+</script>
+</body>
+</html>
