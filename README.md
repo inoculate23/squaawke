@@ -1,4 +1,4 @@
-# SQAAWKE: A Bridge to ACE-Step Local Models with Integrations for Ableton Live and Claude by Anthropic API
+# SQUAAWKE: A Bridge to ACE-Step Local Models with Integrations for Ableton Live and Claude by Anthropic API
 
 <div align="center">
 
