@@ -1,9 +1,20 @@
 # ACE-Step Local
 
+<div align="center">
+
+![Squaawke Logo](assets/squaawke-logo.png)
+
+**Human | AI Collaboration in Immersive Art & Media**
+
 [![Built on ACE-Step](https://img.shields.io/badge/Built%20on-ACE--Step-blue?style=flat-square)](https://github.com/ace-step/ACE-Step)
 [![Powered by acestep.cpp](https://img.shields.io/badge/Powered%20by-acestep.cpp-green?style=flat-square)](https://github.com/ServeurpersoCom/acestep.cpp)
 [![Built with Claude](https://img.shields.io/badge/Built%20with-Claude-orange?style=flat-square)](https://www.anthropic.com/claude)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
+[![ORCID](https://img.shields.io/badge/ORCID-0009--0001--6475--5109-green.svg?style=flat-square)](https://orcid.org/0009-0001-6475-5109)
+
+</div>
+
+---
 
 Local deployment of ACE-Step music generation system with quantized models for CPU/Metal inference.
 
@@ -26,6 +37,15 @@ This project extends ACE-Step with a web-based interface, AI composition assista
 This project was **co-created through human-AI collaboration** with Claude by Anthropic serving as an AI pair programming partner. The human provided vision, direction, and decision-making, while Claude contributed code development, documentation, security auditing, and best practices implementation.
 
 We believe in **transparent attribution** for all contributors—human and AI alike. See `CONTRIBUTORS.md` for details about our collaboration model and why we credit AI contributions.
+
+### 👥 Project Team
+
+**Human Developer & Vision**  
+[![GitHub](https://img.shields.io/badge/GitHub-inoculate23-181717?style=flat-square&logo=github)](https://github.com/inoculate23)
+[![ORCID](https://img.shields.io/badge/ORCID-0009--0001--6475--5109-A6CE39?style=flat-square&logo=orcid)](https://orcid.org/0009-0001-6475-5109)
+
+**AI Development Partner**  
+[![Claude](https://img.shields.io/badge/Anthropic-Claude-orange?style=flat-square)](https://www.anthropic.com/claude)
 
 ## Setup
 
@@ -202,3 +222,35 @@ The `.gitignore` is configured to exclude:
 - Build artifacts and caches
 
 If you accidentally committed secrets, **revoke the keys immediately** and use tools like `git-filter-repo` to remove them from history.
+
+---
+
+## 📖 Citation
+
+If you use Squaawke in your research or project, please cite:
+
+```bibtex
+@software{squaawke2026,
+  author = {inoculate23 and Claude (Anthropic AI)},
+  title = {Squaawke: Local ACE-Step Music Generation with Human-AI Collaboration},
+  year = {2026},
+  publisher = {GitHub},
+  url = {https://github.com/inoculate23/squaawke},
+  note = {ORCID: 0009-0001-6475-5109}
+}
+```
+
+**APA Style:**
+```
+inoculate23, & Claude (Anthropic AI). (2026). Squaawke: Local ACE-Step Music Generation 
+with Human-AI Collaboration [Computer software]. GitHub. 
+https://github.com/inoculate23/squaawke
+```
+
+**MLA Style:**
+```
+inoculate23, and Claude (Anthropic AI). Squaawke: Local ACE-Step Music Generation with 
+Human-AI Collaboration. GitHub, 2026, https://github.com/inoculate23/squaawke.
+```
+
+[![DOI](https://img.shields.io/badge/ORCID-0009--0001--6475--5109-A6CE39?style=flat-square&logo=orcid)](https://orcid.org/0009-0001-6475-5109)

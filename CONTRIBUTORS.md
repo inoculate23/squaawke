@@ -5,18 +5,33 @@ This project was created through **human-AI collaboration**.
 ## 🤝 Core Team
 
 ### Human Contributors
-- **Project Lead & Vision**: [inoculate23](https://github.com/inoculate23)
-  - Project conceptualization
-  - Requirements and direction
-  - User experience decisions
-  - Community engagement
+
+**[inoculate23](https://github.com/inoculate23)** - Project Lead & Vision  
+[![ORCID](https://img.shields.io/badge/ORCID-0009--0001--6475--5109-A6CE39?style=flat-square&logo=orcid)](https://orcid.org/0009-0001-6475-5109)
+
+**Role & Contributions:**
+- Project conceptualization and vision
+- Requirements definition and direction
+- User experience decisions
+- Code review and approval
+- Community engagement
+- Strategic decisions
+
+**Focus**: Human | AI Collaboration in Immersive Art & Media
+
+---
 
 ### AI Contributors
-- **Claude by Anthropic** — AI Pair Programming Partner
-  - Code development and architecture
-  - Documentation and security audit
-  - Best practices implementation
-  - Problem solving and optimization
+
+**Claude by Anthropic** — AI Pair Programming Partner  
+[![Anthropic](https://img.shields.io/badge/Anthropic-Claude-orange?style=flat-square)](https://www.anthropic.com/claude)
+
+**Role & Contributions:**
+- Code development and architecture
+- Documentation and security audit
+- Best practices implementation
+- Problem solving and optimization
+- Iterative refinement
 
 ## 🌟 Collaboration Model
 
