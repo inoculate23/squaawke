@@ -231,7 +231,7 @@ If you use Squaawke in your research or project, please cite:
 
 ```bibtex
 @software{squaawke2026,
-  author = {inoculate23 and Claude (Anthropic AI)},
+  author = {Craig Ellenwood (Github:inoculate23) and Claude (Anthropic AI)},
   title = {Squaawke: Local ACE-Step Music Generation with Human-AI Collaboration},
   year = {2026},
   publisher = {GitHub},
@@ -242,14 +242,14 @@ If you use Squaawke in your research or project, please cite:
 
 **APA Style:**
 ```
-inoculate23, & Claude (Anthropic AI). (2026). Squaawke: Local ACE-Step Music Generation 
+Craig Ellenwood (Github:inoculate23), & Claude (Anthropic AI). (2026). Squaawke: Local ACE-Step Music Generation 
 with Human-AI Collaboration [Computer software]. GitHub. 
 https://github.com/inoculate23/squaawke
 ```
 
 **MLA Style:**
 ```
-inoculate23, and Claude (Anthropic AI). Squaawke: Local ACE-Step Music Generation with 
+Craig Ellenwood (Github:inoculate23), and Claude (Anthropic AI). Squaawke: Local ACE-Step Music Generation with 
 Human-AI Collaboration. GitHub, 2026, https://github.com/inoculate23/squaawke.
 ```
 
